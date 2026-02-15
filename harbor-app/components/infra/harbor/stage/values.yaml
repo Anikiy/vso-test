@@ -122,7 +122,7 @@ expose:
 # the IP address of k8s node
 #
 # If Harbor is deployed behind the proxy, set it as the URL of proxy
-externalURL: https://harbor-stage.wb-bank.ru
+externalURL: https://harbor-stage.local
 
 # The persistence is enabled by default and a default StorageClass
 # is needed in the k8s cluster to provision volumes dynamically.
@@ -132,7 +132,7 @@ externalURL: https://harbor-stage.wb-bank.ru
 # For storing images and charts, you can also use "azure", "gcs", "s3",
 # "swift" or "oss". Set it in the "imageChartStorage" section
 persistence:
-  enabled: true #REVIEW
+  enabled: false #REVIEW
   # Setting it to "keep" to avoid removing PVCs during a helm delete
   # operation. Leaving it empty will delete PVCs after the chart deleted
   # (this does not apply for PVCs that are created for internal database
@@ -531,7 +531,7 @@ nginx:
 
 portal:
   image:
-    repository: harbor.wb-bank.ru/devinfra/images/harbor-portal
+    repository: goharbor/harbor-portal
     tag: v2.14.2
   # set the service account to be used, default if left empty
   serviceAccountName: ""
@@ -577,7 +577,7 @@ portal:
 
 core:
   image:
-    repository: harbor.wb-bank.ru/devinfra/images/harbor-core
+    repository: goharbor/harbor-core
     tag: v2.14.2
   # set the service account to be used, default if left empty
   serviceAccountName: ""
@@ -672,7 +672,7 @@ core:
 
 jobservice:
   image:
-    repository: harbor.wb-bank.ru/devinfra/images/harbor-jobservice
+    repository: goharbor/harbor-jobservice
     tag: v2.14.2
   # set the service account to be used, default if left empty
   serviceAccountName: ""
@@ -715,7 +715,8 @@ jobservice:
   maxJobWorkers: 10
   # The logger for jobs: "file", "database" or "stdout"
   jobLoggers:
-    - file
+    - stdout
+    # - file
     # - database
     # - stdout
   # The jobLogger sweeper duration (ignored if `jobLogger` is `stdout`)
@@ -740,7 +741,7 @@ jobservice:
 registry:
   registry:
     image:
-      repository: harbor.wb-bank.ru/devinfra/images/registry-photon
+      repository: goharbor/registry-photon
       tag: v2.14.2
     resources:
       requests:
@@ -751,7 +752,7 @@ registry:
     extraEnvVars: []
   controller:
     image:
-      repository: harbor.wb-bank.ru/devinfra/images/harbor-registryctl
+      repository: goharbor/harbor-registryctl
       tag: v2.14.2
     resources:
       requests:
@@ -989,8 +990,8 @@ database:
       #    memory: 128Mi
       #    cpu: 100m
   external:
-    host: "pgproxy-infra-devinfra-stage" #REVIEW
-    port: "56000" #REVIEW
+    host: "postgres.local" #REVIEW
+    port: "5432" #REVIEW
     username: "harbor_stage"
     #password: "password"
     coreDatabase: "harbor_stage"
@@ -1059,9 +1060,9 @@ redis:
     # support redis, redis+sentinel
     # addr for redis: <host_redis>:<port_redis>
     # addr for redis+sentinel: <host_sentinel1>:<port_sentinel1>,<host_sentinel2>:<port_sentinel2>,<host_sentinel3>:<port_sentinel3>
-    addr: "infra-harbor-stage-redis-01-01.el.wb-bank.corp:6379,infra-harbor-stage-redis-01-01.nb.wb-bank.corp:6379,infra-harbor-stage-redis-01-01.xs.wb-bank.corp:6379"
+    addr: "redis.local:6379"
     # The name of the set of Redis instances to monitor, it must be set to support redis+sentinel
-    sentinelMasterSet: "master01" #REVIEW
+    sentinelMasterSet: "" #REVIEW
     # TLS configuration for redis connection
     # only server-authentication is supported, mTLS for redis connection is not supported
     # tls connection will be disable by default
@@ -1092,7 +1093,7 @@ redis:
 
 exporter:
   image:
-    repository: harbor.wb-bank.ru/devinfra/images/harbor-exporter
+    repository: goharbor/harbor-exporter
     tag: v2.14.2
   serviceAccountName: ""
   # mount the service account token
