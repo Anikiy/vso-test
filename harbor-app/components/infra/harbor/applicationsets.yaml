@@ -34,12 +34,12 @@ applicationsets:
               - $values/harbor-app/components/infra/harbor/stage/values.yaml
 
           # 2. Ref на gitops-репо для values
-          - repoURL: git@github-personal:YuriB9/vso-test.git
+          - repoURL: git@github.com:YuriB9/vso-test.git
             ref: values
             targetRevision: master
 
           # 3. Секреты (VaultStaticSecret для VSO)
-          - repoURL: git@github-personal:YuriB9/vso-test.git
+          - repoURL: git@github.com:YuriB9/vso-test.git
             path: harbor-app/components/infra/harbor/stage/secrets
             targetRevision: master
         destination:

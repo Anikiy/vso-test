@@ -13,7 +13,7 @@ applications:
         helm:
           valueFiles:
             - $values/harbor-app/components/infra/harbor/applicationsets.yaml
-      - repoURL: git@github-personal:YuriB9/vso-test.git
+      - repoURL: git@github.com:YuriB9/vso-test.git
         ref: values
         targetRevision: master
     destination:

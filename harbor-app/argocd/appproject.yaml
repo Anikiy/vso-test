@@ -6,7 +6,7 @@ metadata:
 spec:
   description: DevInfra project
   sourceRepos:
-    - git@github-personal:YuriB9/vso-test.git
+    - git@github.com:YuriB9/vso-test.git
     - https://helm.goharbor.io
     - https://argoproj.github.io/argo-helm
   destinations:
