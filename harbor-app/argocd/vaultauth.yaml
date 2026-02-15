@@ -1,0 +1,14 @@
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: harbor-stage
+  namespace: harbor-stage
+spec:
+  method: kubernetes
+  mount: kubernetes
+  vaultConnectionRef: vault-connection
+  kubernetes:
+    role: harbor-stage
+    serviceAccount: default
+    audiences:
+      - vault
