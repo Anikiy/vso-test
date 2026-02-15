@@ -1,28 +1,5 @@
 applications:
-  # Секреты (VaultStaticSecret) — синхронизируются первыми, независимо от Helm chart
-  harbor-stage-secrets:
-    additionalLabels:
-      env: stage
-      team: devinfra
-    additionalAnnotations: {}
-    finalizers:
-    - resources-finalizer.argocd.argoproj.io
-    project: devinfra
-    source:
-      repoURL: git@github.com:YuriB9/vso-test.git
-      path: harbor-app/components/infra/harbor/stage/secrets
-      targetRevision: master
-    destination:
-      server: https://kubernetes.default.svc
-      namespace: harbor-stage
-    syncPolicy:
-      automated:
-        prune: true
-        selfHeal: true
-      syncOptions:
-      - CreateNamespace=true
-
-  # Helm chart (ApplicationSet) — зависит от секретов выше
+  # CONFIG-ONLY (helm chart)
   harbor:
     additionalLabels: {}
     additionalAnnotations: {}
