@@ -1,0 +1,88 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: seaweedfs-filer
+  labels:
+    app: seaweedfs
+    component: filer
+spec:
+  serviceName: seaweedfs-filer
+  replicas: 1
+  selector:
+    matchLabels:
+      app: seaweedfs
+      component: filer
+  template:
+    metadata:
+      labels:
+        app: seaweedfs
+        component: filer
+    spec:
+      containers:
+      - name: filer
+        image: chrislusf/seaweedfs:latest
+        args:
+        - filer
+        - -master=seaweedfs-master:9333
+        - -ip.bind=0.0.0.0
+        - -s3
+        ports:
+        - containerPort: 8888
+          name: http
+        - containerPort: 18888
+          name: grpc
+        - containerPort: 8333
+          name: s3
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
+        readinessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 15
+        livenessProbe:
+          httpGet:
+            path: /
+            port: http
+          initialDelaySeconds: 20
+          periodSeconds: 30
+        volumeMounts:
+        - name: data
+          mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: seaweedfs-filer
+  labels:
+    app: seaweedfs
+    component: filer
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8888
+    targetPort: http
+    name: http
+  - port: 18888
+    targetPort: grpc
+    name: grpc
+  - port: 8333
+    targetPort: s3
+    name: s3
+  selector:
+    app: seaweedfs
+    component: filer

@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: seaweedfs-volume
+  labels:
+    app: seaweedfs
+    component: volume
+spec:
+  serviceName: seaweedfs-volume
+  replicas: 1
+  selector:
+    matchLabels:
+      app: seaweedfs
+      component: volume
+  template:
+    metadata:
+      labels:
+        app: seaweedfs
+        component: volume
+    spec:
+      containers:
+      - name: volume
+        image: chrislusf/seaweedfs:latest
+        args:
+        - volume
+        - -mserver=seaweedfs-master:9333
+        - -ip.bind=0.0.0.0
+        - -port=8080
+        - -dir=/data
+        - -max=10
+        ports:
+        - containerPort: 8080
+          name: http
+        - containerPort: 18080
+          name: grpc
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        readinessProbe:
+          httpGet:
+            path: /status
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 15
+        livenessProbe:
+          httpGet:
+            path: /status
+            port: http
+          initialDelaySeconds: 20
+          periodSeconds: 30
+        volumeMounts:
+        - name: data
+          mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 5Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: seaweedfs-volume
+  labels:
+    app: seaweedfs
+    component: volume
+spec:
+  type: ClusterIP
+  ports:
+  - port: 8080
+    targetPort: http
+    name: http
+  - port: 18080
+    targetPort: grpc
+    name: grpc
+  selector:
+    app: seaweedfs
+    component: volume

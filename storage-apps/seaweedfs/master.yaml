@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: seaweedfs-master
+  labels:
+    app: seaweedfs
+    component: master
+spec:
+  serviceName: seaweedfs-master
+  replicas: 1
+  selector:
+    matchLabels:
+      app: seaweedfs
+      component: master
+  template:
+    metadata:
+      labels:
+        app: seaweedfs
+        component: master
+    spec:
+      containers:
+      - name: master
+        image: chrislusf/seaweedfs:latest
+        args:
+        - master
+        - -ip=seaweedfs-master
+        - -ip.bind=0.0.0.0
+        - -mdir=/data
+        - -defaultReplication=000
+        ports:
+        - containerPort: 9333
+          name: http
+        - containerPort: 19333
+          name: grpc
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 250m
+            memory: 256Mi
+        readinessProbe:
+          httpGet:
+            path: /cluster/status
+            port: http
+          initialDelaySeconds: 10
+          periodSeconds: 15
+        livenessProbe:
+          httpGet:
+            path: /cluster/status
+            port: http
+          initialDelaySeconds: 20
+          periodSeconds: 30
+        volumeMounts:
+        - name: data
+          mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      resources:
+        requests:
+          storage: 1Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: seaweedfs-master
+  labels:
+    app: seaweedfs
+    component: master
+spec:
+  type: ClusterIP
+  ports:
+  - port: 9333
+    targetPort: http
+    name: http
+  - port: 19333
+    targetPort: grpc
+    name: grpc
+  selector:
+    app: seaweedfs
+    component: master
