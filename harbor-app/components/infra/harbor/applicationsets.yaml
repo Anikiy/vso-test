@@ -14,7 +14,7 @@ applicationsets:
     generators:
     - list:
         elements:
-          - cluster: local-k3s
+          - cluster: k3s
             url: https://kubernetes.default.svc
     ignoreApplicationDifferences:
     - jsonPointers:
@@ -47,6 +47,7 @@ applicationsets:
           namespace: harbor-stage
         syncPolicy:
           automated:
+            enabled: false
             prune: true
             selfHeal: true
           syncOptions:
