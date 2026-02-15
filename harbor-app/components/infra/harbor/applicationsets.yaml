@@ -37,11 +37,6 @@ applicationsets:
           - repoURL: git@github.com:YuriB9/vso-test.git
             ref: values
             targetRevision: master
-
-          # 3. Секреты (VaultStaticSecret для VSO)
-          - repoURL: git@github.com:YuriB9/vso-test.git
-            path: harbor-app/components/infra/harbor/stage/secrets
-            targetRevision: master
         destination:
           server: '{{.url}}'
           namespace: harbor-stage
