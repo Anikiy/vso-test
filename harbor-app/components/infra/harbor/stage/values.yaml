@@ -1083,9 +1083,9 @@ redis:
     # cacheLayerDatabaseIndex: "7"
     # username field can be an empty string, and it will be authenticated against the default user
     username: ""
-    password: "placeholder"
-    # If using existingSecret, the key must be REDIS_PASSWORD, if ACL mode enabled, also inlcudes data of username, the keys must be REDIS_USERNAME
-    existingSecret: "redis-creds" #REVIEW
+    password: "CHANGE_ME_REDIS_PASSWORD"
+    # WARN: existingSecret for redis uses helm `lookup` in chart 1.18.2 — incompatible with ArgoCD
+    existingSecret: ""
   ## Additional deployment annotations
   podAnnotations: {}
   ## Additional deployment labels
