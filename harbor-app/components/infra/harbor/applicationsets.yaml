@@ -1,0 +1,61 @@
+applicationsets:
+  # STAGE
+  harbor-stage:
+    goTemplate: true
+    goTemplateOptions: ["missingkey=error"]
+    namespace: argocd
+    additionalLabels:
+      env: stage
+      team: devinfra
+      service: harbor
+    additionalAnnotations: {}
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+    generators:
+    - list:
+        elements:
+          - cluster: local-k3s
+            url: https://kubernetes.default.svc
+    ignoreApplicationDifferences:
+    - jsonPointers:
+      - /spec/syncPolicy
+    template:
+      metadata:
+        name: '{{.cluster}}-harbor-stage'
+      spec:
+        project: devinfra
+        sources:
+          # 1. Helm chart из registry
+          - chart: harbor
+            repoURL: https://helm.goharbor.io
+            targetRevision: 1.18.2
+            helm:
+              valueFiles:
+              - $values/harbor-app/components/infra/harbor/stage/values.yaml
+
+          # 2. Ref на gitops-репо для values
+          - repoURL: git@github-personal:YuriB9/vso-test.git
+            ref: values
+            targetRevision: master
+
+          # 3. Секреты (VaultStaticSecret для VSO)
+          - repoURL: git@github-personal:YuriB9/vso-test.git
+            path: harbor-app/components/infra/harbor/stage/secrets
+            targetRevision: master
+        destination:
+          server: '{{.url}}'
+          namespace: harbor-stage
+        syncPolicy:
+          automated:
+            prune: true
+            selfHeal: true
+          syncOptions:
+            - CreateNamespace=true
+            - ServerSideApply=true
+        ignoreDifferences:
+          - group: apps
+            kind: Deployment
+            jsonPointers:
+              - /spec/replicas
+    syncPolicy:
+      preserveResourcesOnDeletion: false

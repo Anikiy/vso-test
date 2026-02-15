@@ -1,0 +1,24 @@
+applications:
+  # CONFIG-ONLY (helm chart)
+  harbor:
+    additionalLabels: {}
+    additionalAnnotations: {}
+    finalizers:
+    - resources-finalizer.argocd.argoproj.io
+    project: devinfra
+    sources:
+      - repoURL: https://argoproj.github.io/argo-helm
+        chart: argocd-apps
+        targetRevision: 2.0.2
+        helm:
+          valueFiles:
+            - $values/harbor-app/components/infra/harbor/applicationsets.yaml
+      - repoURL: git@github-personal:YuriB9/vso-test.git
+        ref: values
+        targetRevision: master
+    destination:
+      server: https://kubernetes.default.svc
+      namespace: argocd
+    syncPolicy:
+      syncOptions:
+      - CreateNamespace=true
