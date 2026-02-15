@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: vault-secret-consumer
+  namespace: test-app
+  labels:
+    app: vault-secret-consumer
+spec:
+  type: ClusterIP
+  selector:
+    app: vault-secret-consumer
+  ports:
+    - port: 80
+      targetPort: 80
