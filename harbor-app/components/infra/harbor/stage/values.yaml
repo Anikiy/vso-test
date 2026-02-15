@@ -1082,8 +1082,8 @@ redis:
     # harborDatabaseIndex: "6"
     # cacheLayerDatabaseIndex: "7"
     # username field can be an empty string, and it will be authenticated against the default user
-    #username: ""
-    #password: ""
+    username: ""
+    password: "placeholder"
     # If using existingSecret, the key must be REDIS_PASSWORD, if ACL mode enabled, also inlcudes data of username, the keys must be REDIS_USERNAME
     existingSecret: "redis-creds" #REVIEW
   ## Additional deployment annotations
