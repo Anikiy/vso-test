@@ -7,7 +7,7 @@ spec:
   description: DevInfra project
   sourceRepos:
     - git@github.com:YuriB9/vso-test.git
-    #- https://helm.goharbor.io
+    - https://charts.gitlab.io
     - https://argoproj.github.io/argo-helm
   destinations:
     - namespace: '*'
