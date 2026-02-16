@@ -1,0 +1,14 @@
+apiVersion: secrets.hashicorp.com/v1beta1
+kind: VaultAuth
+metadata:
+  name: gitlab-stage
+  namespace: gitlab-stage
+spec:
+  method: kubernetes
+  mount: kubernetes
+  vaultConnectionRef: vault-connection
+  kubernetes:
+    role: gitlab-stage
+    serviceAccount: default
+    audiences:
+      - vault

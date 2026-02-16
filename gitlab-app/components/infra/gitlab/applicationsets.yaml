@@ -1,0 +1,62 @@
+applicationsets:
+  # STAGE
+  gitlab-stage:
+    goTemplate: true
+    goTemplateOptions: ["missingkey=error"]
+    namespace: argocd
+    additionalLabels:
+      env: stage
+      team: devinfra
+      service: gitlab
+    additionalAnnotations: {}
+    finalizers:
+      - resources-finalizer.argocd.argoproj.io
+    generators:
+    - list:
+        elements:
+          - cluster: k3s
+            url: https://kubernetes.default.svc
+    ignoreApplicationDifferences:
+    - jsonPointers:
+      - /spec/syncPolicy
+    template:
+      metadata:
+        name: '{{.cluster}}-gitlab-stage'
+      spec:
+        project: devinfra
+        sources:
+          # 1. Helm chart из registry
+          - chart: gitlab
+            repoURL: https://charts.gitlab.io/
+            targetRevision: v8.5.5
+            helm:
+              valueFiles:
+              - $values/gitlab-app/components/infra/gitlab/stage/values.yaml
+
+          # 2. Ref на gitops-репо для values
+          - repoURL: git@github.com:YuriB9/vso-test.git
+            ref: values
+            targetRevision: master
+
+          # 3. Секреты (VaultStaticSecret для VSO)
+          - repoURL: git@github.com:YuriB9/vso-test.git
+            path: gitlab-app/components/infra/gitlab/stage/secrets
+            targetRevision: master
+        destination:
+          server: '{{.url}}'
+          namespace: gitlab-stage
+        syncPolicy:
+          automated:
+            enabled: false
+            prune: true
+            selfHeal: true
+          syncOptions:
+            - CreateNamespace=true
+            - ServerSideApply=true
+        ignoreDifferences:
+          - group: apps
+            kind: Deployment
+            jsonPointers:
+              - /spec/replicas
+    syncPolicy:
+      preserveResourcesOnDeletion: false
