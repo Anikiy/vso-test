@@ -47,7 +47,6 @@ applicationsets:
           namespace: gitlab-stage
         syncPolicy:
           automated:
-            enabled: false
             prune: true
             selfHeal: true
           syncOptions:
