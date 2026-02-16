@@ -898,7 +898,7 @@ global:
 ## End of global
 
 upgradeCheck:
-  enabled: true
+  enabled: false #Disable for the first launch
   image: {}
     # repository:
     # tag:
