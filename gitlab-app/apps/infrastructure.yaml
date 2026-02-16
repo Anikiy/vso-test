@@ -1,6 +1,6 @@
 applications:
   # CONFIG-ONLY (helm chart)
-  harbor:
+  gitlab:
     additionalLabels: {}
     additionalAnnotations: {}
     finalizers:

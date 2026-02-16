@@ -1,0 +1,17 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: devinfra
+  namespace: argocd
+spec:
+  description: DevInfra project
+  sourceRepos:
+    - git@github.com:YuriB9/vso-test.git
+    #- https://helm.goharbor.io
+    - https://argoproj.github.io/argo-helm
+  destinations:
+    - namespace: '*'
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: '*'
+      kind: '*'
